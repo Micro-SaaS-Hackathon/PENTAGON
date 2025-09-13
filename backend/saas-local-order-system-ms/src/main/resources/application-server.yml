@@ -1,7 +1,7 @@
 server:
   port: ${SERVER_PORT:8088}
   servlet:
-    context-path: ${SERVLET_CONTEXT_PATH:/api/core-crm-ms}
+    context-path: ${SERVLET_CONTEXT_PATH:/local-order-system-ms/api}
 logging:
   level:
     sql: debug

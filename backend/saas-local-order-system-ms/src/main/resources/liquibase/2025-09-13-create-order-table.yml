@@ -17,7 +17,7 @@ databaseChangeLog:
                   name: table_no
                   type: BIGINT
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: order_date
                   type: TIMESTAMP
@@ -36,3 +36,8 @@ databaseChangeLog:
                   type: DECIMAL(10,2)
                   constraints:
                     nullable: false
+              - column:
+                  name: products
+                  type: JSON
+                  constraints:
+                    nullable: true
