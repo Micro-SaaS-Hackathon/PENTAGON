@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TakeOrderRequest {
-    private Long orderId;
     @NotNull(message = "Please insert tableName")
     private Long tableNo;
 }

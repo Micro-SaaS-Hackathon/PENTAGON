@@ -13,5 +13,5 @@ public interface OrderService {
 
     Resource getOrderQrImage(Long orderId);
 
-    OrderResponse takeOrder(TakeOrderRequest takeOrderRequest);
+    OrderResponse takeOrder(Long orderId, TakeOrderRequest takeOrderRequest);
 }

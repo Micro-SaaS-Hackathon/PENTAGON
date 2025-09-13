@@ -24,13 +24,14 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/take/{orderId}")
-    public OrderResponse takeOrder(@RequestBody @Valid TakeOrderRequest takeOrderRequest) {
-        return orderService.takeOrder(takeOrderRequest);
+    public OrderResponse takeOrder(@PathVariable Long orderId,
+                                   @RequestBody @Valid TakeOrderRequest takeOrderRequest) {
+        return orderService.takeOrder(orderId, takeOrderRequest);
     }
 
 
     @PostMapping("/generate-qr")
-    public OrderResponse saveOrderAndReturnQrDetails(@RequestBody @Valid List< @Valid ProductWithCountDto> productWithCountDtoList) {
+    public OrderResponse saveOrderAndReturnQrDetails(@RequestBody @Valid List<@Valid ProductWithCountDto> productWithCountDtoList) {
         return orderService.saveOrderAndReturnQrDetails(productWithCountDtoList);
     }
 

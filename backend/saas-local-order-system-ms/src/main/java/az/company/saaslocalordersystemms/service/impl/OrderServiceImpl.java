@@ -74,8 +74,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse takeOrder(TakeOrderRequest takeOrderRequest) {
-        Order order = getOrderEntity(takeOrderRequest.getOrderId());
+    public OrderResponse takeOrder(Long orderId, TakeOrderRequest takeOrderRequest) {
+        Order order = getOrderEntity(orderId);
         order.setStatus(OrderStatus.PROCESSING);
         order.setTableNo(takeOrderRequest.getTableNo());
         orderRepository.save(order);
