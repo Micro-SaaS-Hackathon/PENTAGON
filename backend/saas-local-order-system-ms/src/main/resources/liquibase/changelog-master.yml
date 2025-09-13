@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/2025-09-13-create-order-table.yml
+  - include:
+      file: liquibase/2025-09-13-create-products-table.yml
