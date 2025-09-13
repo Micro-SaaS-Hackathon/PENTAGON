@@ -8,13 +8,24 @@ class BasketCubit extends Cubit<BasketState> {
   BasketCubit() : super(const BasketInitial());
 
   void addProductToBasket(ProductsResponse product) {
-    final updatedProducts = List<ProductsResponse>.from(state.products)
-      ..add(product);
-    emit(
-      BasketUpdated(
-        products: updatedProducts,
-        totalCount: updatedProducts.length,
-      ),
-    );
+    final updatedProductsWithCount = Map<ProductsResponse, int>.from(state.productsWithCount);
+    
+    // Increment count if product already exists, otherwise add it
+    updatedProductsWithCount.update(product, (value) => value + 1, ifAbsent: () => 1);
+    
+    // Recalculate total item count and total price
+    int newTotalItemCount = 0;
+    double newTotalPrice = 0.0;
+    
+    updatedProductsWithCount.forEach((key, value) {
+      newTotalItemCount += value;
+      newTotalPrice += key.price! * value;
+    });
+
+    emit(BasketUpdated(
+      productsWithCount: updatedProductsWithCount,
+      totalItemCount: newTotalItemCount,
+      totalPrice: newTotalPrice,
+    ));
   }
 }

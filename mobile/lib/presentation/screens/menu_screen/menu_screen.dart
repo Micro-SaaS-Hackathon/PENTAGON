@@ -41,43 +41,115 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  // A function to show the bottom sheet
   void _showBasketBottomSheet(BuildContext context) {
+    final basketCubit = BlocProvider.of<BasketCubit>(context);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          width: context.screenWidth,
-          height: 0.5 * context.screenHeight,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Padding(
-            padding: AppPaddings.a14,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("order 1"),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomElevatedButton(
-                      text: "Submit Order",
-                      onPressed: () {
-                        // Call the function to show the dialog
-                        _showOrderConfirmationDialog(context);
-                      },
-                      borderRadius: AppRadiuses.a12,
-                      backgroundColor: AppColors.customRed,
-                      textColor: AppColors.white,
-                      fSize: 16,
-                    ),
-                  ],
-                ),
-              ],
+      builder: (BuildContext sheetContext) {
+        return BlocProvider.value(
+          value: basketCubit,
+          child: Container(
+            width: sheetContext.screenWidth,
+            height: 0.7 * sheetContext.screenHeight,
+            decoration: const BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Padding(
+              padding: AppPaddings.a14,
+              child: BlocBuilder<BasketCubit, BasketState>(
+                builder: (context, basketState) {
+                  // Get the products from the updated state model
+                  final products = basketState.productsWithCount.keys.toList();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppTitles(
+                        title: "Your Basket",
+                        fWeight: FontWeight.bold,
+                        fSize: 20,
+                      ),
+                      10.h,
+                      if (products.isEmpty)
+                        Center(
+                          child: AppTitles(
+                            title: "No product is added to basket",
+                            fWeight: FontWeight.w600,
+                            color: AppColors.customRed,
+                            fSize: 20,
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              final product = products[index];
+                              final count =
+                                  basketState.productsWithCount[product];
+
+                              return ListTile(
+                                leading: Image.network(
+                                  product.productImage.toString(),
+                                ),
+                                title: AppTitles(
+                                  title: product.name.toString(),
+                                  fSize: 16,
+                                  fWeight: FontWeight.w500,
+                                ),
+                                subtitle: Text(
+                                  "Count: $count",
+                                ), // Display the count
+                                trailing: AppTitles(
+                                  title:
+                                      "\$${(product.price! * count!).toStringAsFixed(2)}",
+                                  fWeight: FontWeight.w500,
+                                  fSize: 16,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      // Display the total price at the bottom
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppTitles(
+                            title: "Total:",
+                            fWeight: FontWeight.bold,
+                            fSize: 18,
+                          ),
+                          AppTitles(
+                            title:
+                                "\$${basketState.totalPrice.toStringAsFixed(2)}",
+                            fWeight: FontWeight.bold,
+                            fSize: 18,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomElevatedButton(
+                            text: "Submit Order",
+                            onPressed: () {
+                              _showOrderConfirmationDialog(sheetContext);
+                            },
+                            borderRadius: AppRadiuses.a12,
+                            backgroundColor: AppColors.customRed,
+                            textColor: AppColors.white,
+                            fSize: 16,
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -125,7 +197,7 @@ class MenuScreen extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       SvgPicture.asset(AppAssets.basketIcon, height: 30),
-                      if (basketState.totalCount > 0)
+                      if (basketState.totalItemCount > 0)
                         Positioned(
                           top: -5,
                           right: -5,
@@ -138,7 +210,7 @@ class MenuScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                "3",
+                                basketState.totalItemCount.toString(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -187,7 +259,7 @@ class MenuScreen extends StatelessWidget {
                       childAspectRatio: 0.46,
                     ),
                     itemBuilder: (_, index) {
-                      // final data = homeGridData[index];
+                      final product = data[index];
                       return DecoratedBox(
                         decoration: BoxDecoration(
                           borderRadius: AppRadiuses.a20,
@@ -224,12 +296,20 @@ class MenuScreen extends StatelessWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       AppTitles(
-                                        title: data[index].price.toString(),
+                                        title:
+                                            "\$${data[index].price.toString()}",
                                         fWeight: FontWeight.w600,
                                         fSize: 16,
                                       ),
                                       ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          BlocProvider.of<BasketCubit>(
+                                            context,
+                                          ).addProductToBasket(product);
+                                          log(
+                                            "Product added to basket: ${product.name}",
+                                          );
+                                        },
                                         style: ElevatedButton.styleFrom(
                                           padding: AppPaddings.h1,
                                           backgroundColor: AppColors.customRed,
