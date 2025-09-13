@@ -1,4 +1,4 @@
-package az.company.saaslocalordersystemms.model;
+package az.company.saaslocalordersystemms.model.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResponse {
-    private String id;
+public class ProductWithCountDto {
+    private Long productId;
+    private Integer quantity;
 }
