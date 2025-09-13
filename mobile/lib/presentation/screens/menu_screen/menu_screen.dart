@@ -1,38 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pizza_mizza_saas/presentation/widgets/app_titles.dart';
+import 'package:pizza_mizza_saas/presentation/widgets/custom_elevated_button.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_assets.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_colors.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_paddings.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_radiuses.dart';
+import 'package:pizza_mizza_saas/utils/constants/endpoints.dart';
 import 'package:pizza_mizza_saas/utils/extensions/screen_size_extension.dart';
 import 'package:pizza_mizza_saas/utils/extensions/sized_box_extension.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
+  // A function to show a dialog
+  void _showOrderConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text("Order Submitted!"),
+          content: Text("Thank you for your order! It will be delivered soon."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Close the dialog
+                Navigator.of(dialogContext).pop();
+                // Optionally, close the bottom sheet as well
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // A function to show the bottom sheet
   void _showBasketBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Allows the bottom sheet to be full-screen
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          height:
-              MediaQuery.of(context).size.height *
-              0.7, // Adjust height as needed
+          width: context.screenWidth,
+          height: 0.5 * context.screenHeight,
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          child: Center(
-            child: Text(
-              "Your Basket Content Goes Here",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+          child: Padding(
+            padding: AppPaddings.a14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("order 1"),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomElevatedButton(
+                      text: "Submit Order",
+                      onPressed: () {
+                        // Call the function to show the dialog
+                        _showOrderConfirmationDialog(context);
+                      },
+                      borderRadius: AppRadiuses.a12,
+                      backgroundColor: AppColors.customRed,
+                      textColor: AppColors.white,
+                      fSize: 16,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );
@@ -70,7 +111,6 @@ class MenuScreen extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: () {
-              // Call the function to show the bottom sheet
               _showBasketBottomSheet(context);
             },
             child: Padding(
