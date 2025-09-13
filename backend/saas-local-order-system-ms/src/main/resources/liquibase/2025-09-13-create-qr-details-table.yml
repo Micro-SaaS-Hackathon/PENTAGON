@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-qr-details-table
+      author: mahammad.aslanzada
+      changes:
+        - createTable:
+            tableName: qr_details
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: qr_image_path
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: qr_details
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_qr_details_order
+            onDelete: CASCADE

@@ -1,8 +1,8 @@
 package az.company.saaslocalordersystemms.service;
 
-import az.company.saaslocalordersystemms.model.qr.QrDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface QrService {
 
-
+    MultipartFile generateQr(String text);
 }
