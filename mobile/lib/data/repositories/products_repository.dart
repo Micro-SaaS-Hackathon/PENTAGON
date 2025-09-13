@@ -8,7 +8,7 @@ class ProductsRepository implements ProductsContractor {
   final ProductsService _productsService;
 
   @override
-  Future<ProductsResponse> getProducts() {
+  Future<List<ProductsResponse>> getProducts() {
     return _productsService.getProducts();
   }
 }

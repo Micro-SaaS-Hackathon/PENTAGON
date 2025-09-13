@@ -6,11 +6,13 @@ import 'package:pizza_mizza_saas/utils/extensions/status_code_extension.dart';
 class ProductsService {
   final endpoint = Endpoints.products;
 
-  Future<ProductsResponse> getProducts() async {
+  Future<List<ProductsResponse>> getProducts() async {
     final response = await clientDio.get(endpoint);
 
     if (response.statusCode.isSuccess) {
-      return ProductsResponse.fromJson(response.data);
+      List<dynamic> data = response.data;
+      
+      return data.map((e) => ProductsResponse.fromJson(e)).toList() ;
     } else if (response.statusCode.isFailure) {
       throw Exception("Failed to load PRODUCTS data in service");
     }
