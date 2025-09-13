@@ -23,17 +23,34 @@ class MenuScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text("Order Submitted!"),
-          content: Text("Thank you for your order! It will be delivered soon."),
+          backgroundColor: AppColors.white,
+          title: const Text("Order Submitted!"),
+          content: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.5,
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Thank you for your order! It will be delivered soon.",
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: Image.network(
+                    "http://10.20.1.87:8088/local-order-system-ms/api/orders/16/qr",
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                // Close the dialog
-                Navigator.of(dialogContext).pop();
-                // Optionally, close the bottom sheet as well
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop(); // close dialog
+                Navigator.of(context).pop(); // optionally close bottom sheet
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -137,7 +154,46 @@ class MenuScreen extends StatelessWidget {
                           CustomElevatedButton(
                             text: "Submit Order",
                             onPressed: () {
-                              _showOrderConfirmationDialog(sheetContext);
+                              basketState.totalItemCount <= 0
+                                  ? showDialog(
+                                    context: context,
+                                    builder: (BuildContext dialogContext) {
+                                      return AlertDialog(
+                                        backgroundColor: AppColors.white,
+                                        content: SizedBox(
+                                          height:
+                                              MediaQuery.sizeOf(
+                                                context,
+                                              ).height *
+                                              0.5,
+                                          width: double.maxFinite,
+                                          child: Center(
+                                            child: const AppTitles(
+                                              title:
+                                                  "Your basket is empty. Please add product.",
+                                              color: AppColors.customRed,
+                                              fWeight: FontWeight.w700,
+                                              fSize: 24,
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(); // close dialog
+                                              Navigator.of(
+                                                context,
+                                              ).pop(); // optionally close bottom sheet
+                                            },
+                                            child: const Text("OK"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  )
+                                  : _showOrderConfirmationDialog(sheetContext);
                             },
                             borderRadius: AppRadiuses.a12,
                             backgroundColor: AppColors.customRed,
