@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: saas-local-order-system-ms
+
+  profiles:
+    include:
+      - server
+      - db
