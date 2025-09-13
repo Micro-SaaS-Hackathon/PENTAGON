@@ -61,4 +61,7 @@ public class Order {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<ProductDetailsWithCount> products;
 
+    @Column(name = "qr_path")
+    private String qrPath;
+
 }

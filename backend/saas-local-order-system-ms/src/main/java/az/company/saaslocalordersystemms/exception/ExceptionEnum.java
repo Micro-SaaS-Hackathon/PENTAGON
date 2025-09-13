@@ -14,9 +14,10 @@ public enum ExceptionEnum {
     ALREADY_EXIST_EXCEPTION(DEFAULT_MESSAGES.ALREADY_EXIST, 1004, HttpStatus.BAD_REQUEST),
     INVALID_API_KEY_EXCEPTION(DEFAULT_MESSAGES.INVALID_API_KEY, 1005, HttpStatus.UNAUTHORIZED),
 
+    // Service Exceptions
     PRODUCT_NOT_FOUND_WITH_PROVIDED_ID_EXCEPTION(DEFAULT_MESSAGES.PRODUCT_NOT_FOUND_WITH_PROVIDED_ID, 1101, HttpStatus.NOT_FOUND),
 
-    ;
+    ORDER_NOT_FOUND_WITH_PROVIDED_ID_EXCEPTION(DEFAULT_MESSAGES.ORDER_NOT_FOUND_WITH_PROVIDED_ID, 1102, HttpStatus.NOT_FOUND);
 
 
     private final int exceptionCode;
@@ -32,6 +33,7 @@ public enum ExceptionEnum {
     private static class DEFAULT_MESSAGES {
         public static final String PRODUCT_NOT_FOUND_WITH_PROVIDED_ID = "Product not found with provided id";
         public static final String JSON_PROCESSING = "Json processing exception occured";
+        public static final String ORDER_NOT_FOUND_WITH_PROVIDED_ID = "Order not found with provided id";
         private final static String NOT_FOUND = "Object couldn't find with provided argument";
         public static final String METHOD_ARGUMENT_NOT_VALID = "Argument not valid";
         public static final String ALREADY_EXIST = "Argument is already exist";

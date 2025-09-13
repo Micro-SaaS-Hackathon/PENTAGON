@@ -5,3 +5,5 @@ databaseChangeLog:
       file: liquibase/2025-09-13-create-products-table.yml
   - include:
       file: liquibase/2025-09-13-create-qr-details-table.yml
+  - include:
+      file: liquibase/2025-09-13-alter-order-table-add-qr-path-column.yml

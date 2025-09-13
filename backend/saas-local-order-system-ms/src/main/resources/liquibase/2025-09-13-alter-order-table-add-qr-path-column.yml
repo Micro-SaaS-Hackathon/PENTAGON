@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-table-orders-add-qr-path
+      author: mahammad.aslanzade
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: qr_path
+                  type: VARCHAR(255)
+                  defaultValue: null
+                  constraints:
+                    nullable: true
