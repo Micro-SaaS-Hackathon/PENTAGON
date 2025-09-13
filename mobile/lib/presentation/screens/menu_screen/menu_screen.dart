@@ -1,12 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pizza_mizza_saas/cubits/basket/basket_cubit.dart';
+import 'package:pizza_mizza_saas/cubits/products/products_cubit.dart';
 import 'package:pizza_mizza_saas/presentation/widgets/app_titles.dart';
 import 'package:pizza_mizza_saas/presentation/widgets/custom_elevated_button.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_assets.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_colors.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_paddings.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_radiuses.dart';
-import 'package:pizza_mizza_saas/utils/constants/endpoints.dart';
 import 'package:pizza_mizza_saas/utils/extensions/screen_size_extension.dart';
 import 'package:pizza_mizza_saas/utils/extensions/sized_box_extension.dart';
 
@@ -115,33 +119,38 @@ class MenuScreen extends StatelessWidget {
             },
             child: Padding(
               padding: AppPaddings.r12,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SvgPicture.asset(AppAssets.basketIcon, height: 30),
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          "3",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+              child: BlocBuilder<BasketCubit, BasketState>(
+                builder: (_, basketState) {
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      SvgPicture.asset(AppAssets.basketIcon, height: 30),
+                      if (basketState.totalCount > 0)
+                        Positioned(
+                          top: -5,
+                          right: -5,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                "3",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -149,91 +158,114 @@ class MenuScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: AppPaddings.a16,
-            child: GridView.builder(
-              itemCount: 10,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                crossAxisCount: 2,
-                childAspectRatio: 0.46,
-              ),
-              itemBuilder: (_, index) {
-                // final data = homeGridData[index];
-                return DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: AppRadiuses.a20,
-                    border: Border.all(color: AppColors.borderGray),
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 0.25 * context.screenHeight,
-                        child: SvgPicture.asset(AppAssets.pizza),
-                      ),
-                      Padding(
-                        padding: AppPaddings.h12,
+          BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (_, state) {
+              if (state is ProductsLoading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (state is ProductsError) {
+                log("products Error: ${state.message}");
+                return Center(child: Text("Error"));
+              }
+              if (state is ProductsNetworkError) {
+                log("product network error: ${state.message}");
+                return Center(child: Text("network error"));
+              }
+              if (state is ProductsSuccess) {
+                final data = state.response;
+
+                return Padding(
+                  padding: AppPaddings.a16,
+                  child: GridView.builder(
+                    itemCount: data.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.46,
+                    ),
+                    itemBuilder: (_, index) {
+                      // final data = homeGridData[index];
+                      return DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: AppRadiuses.a20,
+                          border: Border.all(color: AppColors.borderGray),
+                        ),
                         child: Column(
                           children: [
-                            4.h,
-                            AppTitles(
-                              title: "title",
-                              fSize: 16,
-                              fWeight: FontWeight.w600,
+                            SizedBox(
+                              height: 0.25 * context.screenHeight,
+                              child: Image.network(
+                                data[index].productImage.toString(),
+                              ),
                             ),
-                            6.h,
-                            AppTitles(
-                              title:
-                                  "description,description,description,description,description",
-                              fWeight: FontWeight.w500,
-                              color: AppColors.customGray,
-                            ),
-                            20.h,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                AppTitles(
-                                  title: "12 AZN",
-                                  fWeight: FontWeight.w600,
-                                  fSize: 16,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    padding: AppPaddings.h1,
-                                    backgroundColor: AppColors.customRed,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: AppRadiuses.a10,
-                                    ),
+                            Padding(
+                              padding: AppPaddings.h12,
+                              child: Column(
+                                children: [
+                                  4.h,
+                                  AppTitles(
+                                    title: data[index].name.toString(),
+                                    fSize: 16,
+                                    fWeight: FontWeight.w600,
                                   ),
-                                  child: Row(
+                                  6.h,
+                                  AppTitles(
+                                    title:
+                                        data[index].shortDescription.toString(),
+                                    fWeight: FontWeight.w500,
+                                    color: AppColors.customGray,
+                                  ),
+                                  20.h,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      SvgPicture.asset(
-                                        AppAssets.plusIcon,
-                                        height: 24,
-                                      ),
                                       AppTitles(
-                                        title: "Add",
-                                        color: AppColors.white,
+                                        title: data[index].price.toString(),
                                         fWeight: FontWeight.w600,
                                         fSize: 16,
                                       ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        style: ElevatedButton.styleFrom(
+                                          padding: AppPaddings.h1,
+                                          backgroundColor: AppColors.customRed,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: AppRadiuses.a10,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              AppAssets.plusIcon,
+                                              height: 24,
+                                            ),
+                                            AppTitles(
+                                              title: "Add",
+                                              color: AppColors.white,
+                                              fWeight: FontWeight.w600,
+                                              fSize: 16,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 );
-              },
-            ),
+              }
+              return SizedBox.shrink();
+            },
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_mizza_saas/presentation/screens/menu_screen/menu_screen.dart';
 import 'package:pizza_mizza_saas/utils/constants/app_colors.dart';
+import 'package:pizza_mizza_saas/utils/helpers/pager.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         )
       ),
       debugShowCheckedModeBanner: false,
-      home: MenuScreen(),
+      home: Pager.menu,
     );
   }
 }

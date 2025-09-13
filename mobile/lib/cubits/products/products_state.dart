@@ -9,7 +9,7 @@ final class ProductsLoading extends ProductsState {}
 final class ProductsSuccess extends ProductsState {
   ProductsSuccess(this.response);
 
-  final ProductsResponse response;
+  final List<ProductsResponse> response;
 }
 
 final class ProductsError extends ProductsState {
